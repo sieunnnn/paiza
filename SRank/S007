@@ -1,0 +1,59 @@
+import java.io.*;
+import java.util.*;
+
+public class S007 {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static Map<Character, Long> map = new HashMap<>();
+    static Stack<Long> multipliers = new Stack<>();
+    static Stack<Map<Character, Long>> stringCounts = new Stack<>();
+    static long currentMultiplier = 0;
+
+    public static void main(String[] args) throws IOException {
+        init();
+
+        String input = br.readLine();
+        solve(input);
+
+        for (Map.Entry<Character, Long> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        }
+    }
+
+    public static void init() {
+        char c = 'a';
+        while (c <= 'z') {
+            map.put(c, 0L);
+            c++;
+        }
+    }
+
+    public static void solve(String input) {
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (Character.isDigit(c)) {
+                currentMultiplier = currentMultiplier * 10 + (c - '0');
+
+            } else if (c == '(') {
+                multipliers.push(currentMultiplier == 0 ? 1 : currentMultiplier);
+                stringCounts.push(new HashMap<>(map));
+                map.clear();
+                init();
+                currentMultiplier = 0;
+
+            } else if (c == ')') {
+                long multiplier = multipliers.pop();
+                Map<Character, Long> tempMap = new HashMap<>(map);
+                map = stringCounts.pop();
+
+                for (Map.Entry<Character, Long> entry : tempMap.entrySet()) {
+                    map.put(entry.getKey(), map.getOrDefault(entry.getKey(), 0L) + entry.getValue() * multiplier);
+                }
+
+            } else if (Character.isLowerCase(c)) {
+                map.put(c, map.getOrDefault(c, 0L) + (currentMultiplier == 0 ? 1 : currentMultiplier));
+                currentMultiplier = 0;
+            }
+        }
+    }
+}
