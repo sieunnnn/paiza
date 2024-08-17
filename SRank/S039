@@ -1,0 +1,63 @@
+import java.io.*;
+import java.util.*;
+
+public class S039 {
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static StringTokenizer st;
+    static int[][] graph;
+    static int[][] width;
+
+    static int H;
+    static int W;
+    static int maxArea = 0;
+
+    public static void main(String[] args) throws IOException {
+        st = new StringTokenizer(br.readLine());
+        H = Integer.parseInt(st.nextToken());
+        W = Integer.parseInt(st.nextToken());
+        graph = new int[H][W];
+        width = new int[H][W];
+
+        for (int i = 0; i < H; i++) {
+            String[] temp = br.readLine().split("");
+            for (int j = 0; j < W; j++) {
+                if (temp[j].equals("#")) graph[i][j] = 0;
+                else graph[i][j] = 1;
+            }
+        }
+
+        findMaxWidth();
+        findMaxArea();
+        System.out.println(maxArea);
+    }
+
+    public static void findMaxWidth() {
+        for (int i = 0; i < H; i++) {
+            for (int j = 0; j < W; j++) {
+                if (graph[i][j] == 0) {
+                    width[i][j] = 0;
+                    
+                } else {
+                    width[i][j] = (j == 0) ? 1 : width[i][j - 1] + 1;
+                }
+            }
+        }
+    }
+
+    public static void findMaxArea() {
+        for (int i = 0; i < H; i++) {
+            for (int j = 0; j < W; j++) {
+                if (width[i][j] > 0) {
+                    int minWidth = width[i][j];
+                    
+                    for (int k = i; k < H; k++) {
+                        if (width[k][j] == 0) break;
+                        
+                        minWidth = Math.min(minWidth, width[k][j]);
+                        maxArea = Math.max(maxArea, minWidth * (k - i + 1));
+                    }
+                }
+            }
+        }
+    }
+}
